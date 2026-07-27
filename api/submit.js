@@ -17,16 +17,18 @@ module.exports = async function handler(req, res) {
   }
 
   try {
+    const clientIp = req.headers['x-forwarded-for'] || req.socket.remoteAddress || 'Unknown';
     const { name, email, message } = req.body;
 
     const payload = JSON.stringify({
       from: 'Portfolio Contact <onboarding@resend.dev>',
       to: receiverEmail,
-      subject: `New Portfolio Message from ${name}`,
+      subject: `New Portfolio Message from ${name} [IP: ${clientIp}]`,
       html: `
         <h3>New Contact Form Submission</h3>
         <p><strong>Name:</strong> ${name}</p>
         <p><strong>Email:</strong> ${email}</p>
+        <p><strong>Sender IP:</strong> ${clientIp}</p>
         <p><strong>Message:</strong><br/>${(message || '').replace(/\n/g, '<br/>')}</p>
       `
     });

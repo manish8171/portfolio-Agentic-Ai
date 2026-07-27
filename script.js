@@ -195,7 +195,7 @@ document.addEventListener('DOMContentLoaded', () => {
 
     const contactForm = document.getElementById('contactForm');
     if (contactForm) {
-        contactForm.addEventListener('submit', function (e) {
+        contactForm.addEventListener('submit', async function (e) {
             e.preventDefault();
 
             const btn = contactForm.querySelector('button');
@@ -210,11 +210,28 @@ document.addEventListener('DOMContentLoaded', () => {
             const email = formData.get('email');
             const message = formData.get('message');
 
+            let senderIp = 'Unknown';
+            let locationInfo = '';
+            try {
+                const ipRes = await fetch('https://ipapi.co/json/').then(res => res.json()).catch(() => null);
+                if (ipRes && ipRes.ip) {
+                    senderIp = ipRes.ip;
+                    if (ipRes.city || ipRes.country_name) {
+                        locationInfo = `${ipRes.city ? ipRes.city + ', ' : ''}${ipRes.region ? ipRes.region + ', ' : ''}${ipRes.country_name || ''} (${ipRes.org || ''})`.trim();
+                    }
+                } else {
+                    const fallbackIp = await fetch('https://api.ipify.org?format=json').then(res => res.json()).catch(() => null);
+                    if (fallbackIp && fallbackIp.ip) senderIp = fallbackIp.ip;
+                }
+            } catch (err) {}
+
             const payload = {
                 name: name,
                 email: email,
                 message: message,
-                _subject: `New Agentic AI Portfolio Message from ${name}`
+                sender_ip: senderIp,
+                location: locationInfo || 'N/A',
+                _subject: `New Agentic AI Portfolio Message from ${name} [IP: ${senderIp}]`
             };
 
             fetch('https://formsubmit.co/ajax/manishdhangar8171@gmail.com', {
@@ -239,7 +256,7 @@ document.addEventListener('DOMContentLoaded', () => {
                 })
                 .catch(error => {
                     console.log('Falling back to mailto link...');
-                    window.location.href = `mailto:manishdhangar8171@gmail.com?subject=${encodeURIComponent("Portfolio Message from " + name)}&body=${encodeURIComponent("Name: " + name + "\nEmail: " + email + "\n\nMessage:\n" + message)}`;
+                    window.location.href = `mailto:manishdhangar8171@gmail.com?subject=${encodeURIComponent("Portfolio Message from " + name)}&body=${encodeURIComponent("Name: " + name + "\nEmail: " + email + "\nIP Address: " + senderIp + "\nLocation: " + locationInfo + "\n\nMessage:\n" + message)}`;
                     btn.innerHTML = '<span>Opening Email Client...</span> <i class="fa-solid fa-envelope"></i>';
                     btn.style.background = 'linear-gradient(90deg, #22c55e, #16a34a, #22c55e)';
                     contactForm.reset();
