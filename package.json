@@ -1,0 +1,33 @@
+{
+  "name": "agentic-ai-portfolio",
+  "version": "1.0.0",
+  "description": "Agentic AI & GenAI Portfolio of Manish Dhangar",
+  "main": "index.html",
+  "scripts": {
+    "test": "echo \"Error: no test specified\" && exit 1",
+    "serve": "npx http-server -p 3000"
+  },
+  "repository": {
+    "type": "git",
+    "url": "git+https://github.com/manish8171/portfolio-Agentic-Ai.git"
+  },
+  "keywords": [
+    "agentic-ai",
+    "genai",
+    "mcp",
+    "llm",
+    "rag",
+    "portfolio",
+    "manish-dhangar"
+  ],
+  "author": "Manish Dhangar",
+  "license": "ISC",
+  "bugs": {
+    "url": "https://github.com/manish8171/agentic-ai-portfolio/issues"
+  },
+  "homepage": "https://github.com/manish8171/agentic-ai-portfolio#readme",
+  "dependencies": {
+    "@vercel/analytics": "^2.0.1",
+    "@vercel/speed-insights": "^2.0.0"
+  }
+}
