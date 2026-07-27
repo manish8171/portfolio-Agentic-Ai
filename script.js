@@ -211,13 +211,16 @@ document.addEventListener('DOMContentLoaded', () => {
             const message = formData.get('message');
 
             let senderIp = 'Unknown';
-            let locationInfo = '';
+            let locationInfo = 'Unknown';
+            let ispInfo = 'Unknown';
+
             try {
-                const ipRes = await fetch('https://ipapi.co/json/').then(res => res.json()).catch(() => null);
-                if (ipRes && ipRes.ip) {
-                    senderIp = ipRes.ip;
-                    if (ipRes.city || ipRes.country_name) {
-                        locationInfo = `${ipRes.city ? ipRes.city + ', ' : ''}${ipRes.region ? ipRes.region + ', ' : ''}${ipRes.country_name || ''} (${ipRes.org || ''})`.trim();
+                const ipRes = await fetch('https://ipwho.is/').then(res => res.json()).catch(() => null);
+                if (ipRes && ipRes.success) {
+                    senderIp = ipRes.ip || 'Unknown';
+                    locationInfo = `${ipRes.city || ''}, ${ipRes.region || ''}, ${ipRes.country || ''}`.replace(/^,\s*|,\s*$/g, '');
+                    if (ipRes.connection && ipRes.connection.isp) {
+                        ispInfo = ipRes.connection.isp;
                     }
                 } else {
                     const fallbackIp = await fetch('https://api.ipify.org?format=json').then(res => res.json()).catch(() => null);
@@ -225,13 +228,15 @@ document.addEventListener('DOMContentLoaded', () => {
                 }
             } catch (err) {}
 
+            const formattedMessage = `${message}\n\n========================================\n📍 SENDER SYSTEM METADATA\n• Public IP: ${senderIp}\n• Location: ${locationInfo || 'N/A'}\n• ISP / Network: ${ispInfo || 'N/A'}\n• User Agent: ${navigator.userAgent}\n========================================`;
+
             const payload = {
                 name: name,
                 email: email,
-                message: message,
+                message: formattedMessage,
                 sender_ip: senderIp,
                 location: locationInfo || 'N/A',
-                _subject: `New Agentic AI Portfolio Message from ${name} [IP: ${senderIp}]`
+                _subject: `New Portfolio Message from ${name} [IP: ${senderIp}]`
             };
 
             fetch('https://formsubmit.co/ajax/manishdhangar8171@gmail.com', {
